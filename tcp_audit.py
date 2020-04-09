@@ -75,8 +75,6 @@ def Usage():
       		-p [--port] : tcp port 
       		-e [--eth]  : network card
       		-t [--type] : define whether the local address is the sender or the receiver [src/des]
-      		-u [--user] : remote mysql node username
-      		-P [--passwd] : mysql password
     	    """
     print(__usage__)
 

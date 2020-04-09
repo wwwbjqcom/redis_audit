@@ -68,6 +68,8 @@ class Op_packet:
         :return:
         """
         self.payload = len(data)
+        if self.payload <= 8:
+            return 
         self.offset = 8          #跳过头部的*3\r\n$4\r\n
         s_end = self.find_r(data)
         self.command = data[self.offset:s_end].decode("utf8", "ignore")
@@ -134,7 +136,7 @@ class Op_packet:
                 return session,True
 
     def an_packet(self):
-        _ip = self.__get_netcard()
+        self._ip = self.__get_netcard()
         self._logging = Logging()
 
         while 1:
