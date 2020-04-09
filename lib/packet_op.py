@@ -97,7 +97,7 @@ class Op_packet:
         return data.find(b'\r', self.offset)
 
     def check_a(self, data):
-        if struct.unpack('B',data[self.offset])[0] == 0x24:
+        if data[self.offset] == 36:
             return True
         return None
 
@@ -118,7 +118,7 @@ class Op_packet:
         if self._type == 'src':
             if srchost == self._ip:
                 '''client packet'''
-                session = str([srchost,srcport,dsthost,dstport])
+                session = [srchost,srcport,dsthost,dstport]
                 return session,True
             else:
                 '''server response'''
@@ -130,7 +130,7 @@ class Op_packet:
                 return None,None
             else:
                 '''client packet'''
-                session = str([srchost, srcport,dsthost, dstport])
+                session = [srchost, srcport,dsthost, dstport]
                 return session,True
 
     def an_packet(self):
