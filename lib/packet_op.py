@@ -84,7 +84,6 @@ class Op_packet:
 
     def seek_tmp(self, data):
         if self.check_a(data):
-            print(self.offset, self.payload)
             self.find_n(data)
             self.seek_tmp(data)
         return
@@ -97,6 +96,8 @@ class Op_packet:
         return data.find(b'\r', self.offset)
 
     def check_a(self, data):
+        if self.check_payload():
+            return None
         if data[self.offset] == 0x24:
             return True
         return None
