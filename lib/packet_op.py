@@ -67,9 +67,6 @@ class Op_packet:
         unpack packet
         :return:
         """
-        self.payload = len(data)
-        if self.payload <= 8:
-            return 
         self.offset = 8          #跳过头部的*3\r\n$4\r\n
         s_end = self.find_r(data)
         self.command = data[self.offset:s_end].decode("utf8", "ignore")
@@ -87,6 +84,7 @@ class Op_packet:
 
     def seek_tmp(self, data):
         if self.check_a(data):
+            print(self.offset, self.payload)
             self.find_n(data)
             self.seek_tmp(data)
         return
@@ -155,6 +153,9 @@ class Op_packet:
                     src_host,dst_host = self.inet_to_str(ip.src),self.inet_to_str(ip.dst)
                     session, session_status = self.GetSession(src_host,tcp.sport,dst_host, tcp.dport)
                     if session_status:
+                        self.payload = len(tcp.data)
+                        if self.payload <= 8:
+                            continue
                         self.Unpacking(data=tcp.data)
 
                         jsons = {'source_host': session[0], 'source_port': session[1], 'destination_host': session[2],
