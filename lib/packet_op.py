@@ -72,10 +72,11 @@ class Op_packet:
         self.command = data[self.offset:s_end].decode("utf8", "ignore")
         self.offset = s_end + 2
         while 1:
-            self.seek_tmp(data)
-            self.get_string(data)
             if self.check_payload():
                 return
+            self.seek_tmp(data)
+            self.get_string(data)
+
 
     def get_string(self,data):
         s_end = self.find_r(data)
@@ -96,16 +97,14 @@ class Op_packet:
         return data.find(b'\r', self.offset)
 
     def check_a(self, data):
-        if self.check_payload():
-            return None
         if struct.unpack('B',data[self.offset])[0] == 0x24:
             return True
         return None
 
     def check_payload(self):
         if self.offset + 2 >= self.payload:
-            return None
-        return True
+            return True
+        return None
 
     def GetSession(self,srchost,srcport,dsthost,dstport):
         '''
