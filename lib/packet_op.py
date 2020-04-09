@@ -6,7 +6,7 @@
 from lib.log import Logging
 import socket,psutil,dpkt
 from dpkt.compat import compat_ord
-import time,threading
+import time,threading,struct
 import json
 
 class Op_packet:
@@ -98,7 +98,7 @@ class Op_packet:
     def check_a(self, data):
         if self.check_payload():
             return None
-        if data[self.offset] == 0x24:
+        if struct.unpack('B',data[self.offset])[0] == 0x24:
             return True
         return None
 
