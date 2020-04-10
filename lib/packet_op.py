@@ -173,7 +173,7 @@ class Op_packet:
                         if len(self.command) > 0:
                             jsons = {'source_host': session[0], 'source_port': session[1], 'destination_host': session[2],
                                      'destination_port': session[3],
-                                     'command': self.command, 'event_time': int(_cur_time)}
+                                     'command': self.command, 'event_date': int(_cur_time)}
                             self.command_list.append(jsons)
                             self.command_list_len += 1
                             self.insert_ck()
@@ -183,8 +183,8 @@ class Op_packet:
 
     def insert_ck(self):
         if self.command_list_len >=1000:
-            conn = connect('clickhouse://10.0.0.253')
+            conn = connect('clickhouse://10.0.0.252')
             cursor = conn.cursor()
-            cursor.executemany('insert into redis_audit.redis_audit_info(source_host,source_port,destination_host,destination_port,command,event_date)',self.command_list)
+            cursor.executemany('insert into redis_audit.redis_audit_info(source_host,source_port,destination_host,destination_port,command,event_date) values',self.command_list)
             self.command_list_len = 0
             self.command_list = []
