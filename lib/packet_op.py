@@ -71,7 +71,7 @@ class Op_packet:
         s_end = self.find_r(data)
         self.command = data[self.offset:s_end].decode("utf8", "ignore")
         self.offset = s_end + 2
-        self.seek_num = 0
+        # self.seek_num = 0
         while 1:
             if self.check_payload():
                 return
@@ -87,9 +87,9 @@ class Op_packet:
         self.offset = s_end + 2
 
     def seek_tmp(self, data):
-        self.seek_num += 1
-        if self.seek_num >= 10:
-            print(self.offset, self.payload)
+        # self.seek_num += 1
+        # if self.seek_num >= 10:
+        #     print(self.offset, self.payload)
         if self.check_payload():
             return None
         elif self.check_a(data):
@@ -112,6 +112,8 @@ class Op_packet:
 
     def check_payload(self):
         if self.offset + 2 >= self.payload:
+            return True
+        elif self.offset < 8:
             return True
         return None
 
@@ -163,7 +165,7 @@ class Op_packet:
                     session, session_status = self.GetSession(src_host,tcp.sport,dst_host, tcp.dport)
                     if session_status:
                         self.payload = len(tcp.data)
-                        if self.payload <= 8 and self.payload >= 2097152:   #忽略小于8字节和大于2m的数据包
+                        if self.payload <= 8 :
                             continue
                         self.Unpacking(data=tcp.data)
 
