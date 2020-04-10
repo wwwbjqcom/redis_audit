@@ -71,6 +71,7 @@ class Op_packet:
         s_end = self.find_r(data)
         self.command = data[self.offset:s_end].decode("utf8", "ignore")
         self.offset = s_end + 2
+        self.seek_num = 0
         while 1:
             if self.check_payload():
                 return
@@ -86,6 +87,9 @@ class Op_packet:
         self.offset = s_end + 2
 
     def seek_tmp(self, data):
+        self.seek_num += 1
+        if self.seek_num >= 10:
+            print(self.offset, self.payload)
         if self.check_payload():
             return None
         elif self.check_a(data):
