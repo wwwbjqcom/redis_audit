@@ -168,10 +168,10 @@ class Op_packet:
                         if self.payload <= 8 and self.payload >= 4194304:   # 抛弃小于8字节和大于4m的数据包
                             continue
                         self.Unpacking(data=tcp.data)
-
-                        jsons = {'source_host': session[0], 'source_port': session[1], 'destination_host': session[2],
-                                 'destination_port': session[3],
-                                 'command': self.command}
-                        self._logging.info(msg=json.dumps(jsons))
+                        if len(self.command) > 0:
+                            jsons = {'source_host': session[0], 'source_port': session[1], 'destination_host': session[2],
+                                     'destination_port': session[3],
+                                     'command': self.command}
+                            self._logging.info(msg=json.dumps(jsons))
             else:
                 time.sleep(0.01)
