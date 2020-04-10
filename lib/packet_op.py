@@ -171,7 +171,7 @@ class Op_packet:
                         if len(self.command) > 0:
                             jsons = {'source_host': session[0], 'source_port': session[1], 'destination_host': session[2],
                                      'destination_port': session[3],
-                                     'command': self.command}
+                                     'command': self.command, 'time': _cur_time}
                             self._logging.info(msg=json.dumps(jsons))
             else:
                 time.sleep(0.01)
