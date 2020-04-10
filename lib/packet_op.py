@@ -7,6 +7,7 @@ from lib.log import Logging
 import socket,psutil,dpkt
 from dpkt.compat import compat_ord
 import time,threading,struct
+from clickhouse_driver import connect
 import json
 
 class Op_packet:
@@ -147,7 +148,8 @@ class Op_packet:
     def an_packet(self):
         self._ip = self.__get_netcard()
         self._logging = Logging()
-
+        self.command_list = []
+        self.command_list_len = 0
         while 1:
             if not self.queue.empty():
                 buf,_cur_time = self.queue.get()
@@ -171,7 +173,18 @@ class Op_packet:
                         if len(self.command) > 0:
                             jsons = {'source_host': session[0], 'source_port': session[1], 'destination_host': session[2],
                                      'destination_port': session[3],
-                                     'command': self.command, 'time': _cur_time}
-                            self._logging.info(msg=json.dumps(jsons))
+                                     'command': self.command, 'event_time': int(_cur_time)}
+                            self.command_list.append(jsons)
+                            self.command_list_len += 1
+                            self.insert_ck()
+                            #self._logging.info(msg=json.dumps(jsons))
             else:
                 time.sleep(0.01)
+
+    def insert_ck(self):
+        if self.command_list_len >=1000:
+            conn = connect('clickhouse://10.0.0.253')
+            cursor = conn.cursor()
+            cursor.executemany('insert into redis_audit.redis_audit_info(source_host,source_port,destination_host,destination_port,command,event_date)',self.command_list)
+            self.command_list_len = 0
+            self.command_list = []
