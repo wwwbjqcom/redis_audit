@@ -75,6 +75,8 @@ class Op_packet:
             if self.check_payload():
                 return
             self.seek_tmp(data)
+            if self.check_payload():
+                return
             self.get_string(data)
 
 
@@ -84,6 +86,8 @@ class Op_packet:
         self.offset = s_end + 2
 
     def seek_tmp(self, data):
+        if self.check_payload():
+            return None
         if self.check_a(data):
             self.find_n(data)
             self.seek_tmp(data)
