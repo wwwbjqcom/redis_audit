@@ -165,7 +165,7 @@ class Op_packet:
                     session, session_status = self.GetSession(src_host,tcp.sport,dst_host, tcp.dport)
                     if session_status:
                         self.payload = len(tcp.data)
-                        if self.payload <= 8 :
+                        if self.payload <= 8 and self.payload >= 4194304:   # 抛弃小于8字节和大于4m的数据包
                             continue
                         self.Unpacking(data=tcp.data)
 
