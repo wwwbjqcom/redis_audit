@@ -88,10 +88,11 @@ class Op_packet:
     def seek_tmp(self, data):
         if self.check_payload():
             return None
-        if self.check_a(data):
+        elif self.check_a(data):
             self.find_n(data)
             return self.seek_tmp(data)
-        return True
+        else:
+            return True
 
     def find_n(self, data):
         s_end = data.find(b'\n', self.offset)
