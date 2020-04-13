@@ -75,6 +75,8 @@ def Usage():
       		-p [--port] : tcp port 
       		-e [--eth]  : network card
       		-t [--type] : define whether the local address is the sender or the receiver [src/des]
+      		--ckhost : clickhouse host
+      		--many :  execute many number, default 1000
     	    """
     print(__usage__)
 
@@ -83,7 +85,7 @@ def main(argv):
     _argv = {}
     try:
         opts, args = getopt.getopt(argv[1:], 'hp:e:t:u:P:',
-                                   ['help', 'port=', 'eth=','type=','user=','passwd='])
+                                   ['help', 'port=', 'eth=','type=','ckhost=','many='])
     except getopt.GetoptError as err:
         print(str(err))
         Usage()
@@ -98,10 +100,10 @@ def main(argv):
             _argv['eth'] = a
         elif o in ('-t','--type'):
             _argv['_type'] = a
-        elif o in ('-u','--user'):
-            _argv['user'] = a
-        elif o in ('-P','--passwd'):
-            _argv['passwd'] = a
+        elif o == '--ckhost':
+            _argv['ckhost'] = a
+        elif o == '--many':
+            _argv['many'] = int(a)
         else:
             print('unhandled option')
             Usage()

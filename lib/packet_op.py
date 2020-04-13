@@ -8,23 +8,15 @@ import socket,psutil,dpkt
 from dpkt.compat import compat_ord
 import time,threading,struct
 from clickhouse_driver import connect
-import json
+import json,traceback
 
 class Op_packet:
     def __init__(self,**kwargs):
         self.kwargs = kwargs
         self.queue = kwargs['queue']
         self._type = kwargs['_type']
-
-        self.mysql_user = kwargs['user'] if 'user' in kwargs else None
-        self.mysql_passwd = kwargs['passwd'] if 'passwd' in kwargs else None
-        if self.mysql_user:
-            if self.mysql_passwd:
-                pass
-            else:
-                print('Mysql connection information needs to be set at the same time')
-                import sys
-                sys.exit()
+        self.ckhost = kwargs['ckhost'] if 'ckhost' in kwargs else None
+        self.many = kwargs['many'] if 'many' in kwargs else 1000
 
         self.all_session_users = {}
         self.get_user_list = {}
@@ -175,17 +167,24 @@ class Op_packet:
                             jsons = {'source_host': session[0], 'source_port': session[1], 'destination_host': session[2],
                                      'destination_port': session[3],
                                      'command': self.command, 'event_date': int(_cur_time)}
-                            self.command_list.append(jsons)
-                            self.command_list_len += 1
-                            self.insert_ck()
-                            #self._logging.info(msg=json.dumps(jsons))
+
+                            if self.ckhost:
+                                self.command_list.append(jsons)
+                                self.command_list_len += 1
+                                self.insert_ck()
+                            else:
+                                self._logging.info(msg=json.dumps(jsons))
             else:
                 time.sleep(0.01)
 
     def insert_ck(self):
-        if self.command_list_len >=1000:
-            conn = connect('clickhouse://10.0.0.252')
-            cursor = conn.cursor()
-            cursor.executemany('insert into redis_audit.redis_audit_info(source_host,source_port,destination_host,destination_port,command,event_date) values',self.command_list)
+        if self.command_list_len >=self.many:
+            url = 'clickhouse://{}'.format(self.ckhost)
+            try:
+                conn = connect(url)
+                cursor = conn.cursor()
+                cursor.executemany('insert into redis_audit.redis_audit_info(source_host,source_port,destination_host,destination_port,command,event_date) values',self.command_list)
+            except:
+                print(traceback.format_exc())
             self.command_list_len = 0
             self.command_list = []
