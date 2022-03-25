@@ -77,6 +77,7 @@ def Usage():
       		-t [--type] : define whether the local address is the sender or the receiver [src/des]
       		--ckhost : clickhouse host
       		--many :  execute many number, default 1000
+      		-c [--cluster]: current business cluster name 
     	    """
     print(__usage__)
 
@@ -84,8 +85,8 @@ def Usage():
 def main(argv):
     _argv = {}
     try:
-        opts, args = getopt.getopt(argv[1:], 'hp:e:t:u:P:',
-                                   ['help', 'port=', 'eth=','type=','ckhost=','many='])
+        opts, args = getopt.getopt(argv[1:], 'hp:e:t:u:P:c:',
+                                   ['help', 'port=', 'eth=','type=','ckhost=','many=','cluster='])
     except getopt.GetoptError as err:
         print(str(err))
         Usage()
@@ -104,6 +105,8 @@ def main(argv):
             _argv['ckhost'] = a
         elif o == '--many':
             _argv['many'] = int(a)
+        elif o in ('-c', '--cluster'):
+            _argv['cluster_name'] = a
         else:
             print('unhandled option')
             Usage()

@@ -166,7 +166,7 @@ class Op_packet:
                         if len(self.command) > 0:
                             jsons = {'source_host': session[0], 'source_port': session[1], 'destination_host': session[2],
                                      'destination_port': session[3],
-                                     'command': self.command, 'event_date': int(_cur_time)}
+                                     'command': self.command, 'event_date': int(_cur_time),'cluster_name': self.kwargs['cluster_name']}
 
                             if self.ckhost:
                                 self.command_list.append(jsons)
@@ -183,7 +183,7 @@ class Op_packet:
             try:
                 conn = connect(url)
                 cursor = conn.cursor()
-                cursor.executemany('insert into redis_audit.redis_audit_info(source_host,source_port,destination_host,destination_port,command,event_date) values',self.command_list)
+                cursor.executemany('insert into redis_audit.redis_audit_info(source_host,source_port,destination_host,destination_port,command,cluster_name,event_date) values',self.command_list)
             except:
                 print(traceback.format_exc())
             self.command_list_len = 0
